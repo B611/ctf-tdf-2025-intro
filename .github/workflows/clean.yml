@@ -1,5 +1,5 @@
 name: Purge Logs
-
+ 
 on:
   workflow_run:
     workflows: ["Chall Intro"]
